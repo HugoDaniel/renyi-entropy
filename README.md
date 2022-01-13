@@ -1,2 +1,6 @@
 # renyi-entropy
-An humble attempt at a mono repo (this has nothing to do with Rényi entropy... or does it?)
+
+This repository holds my hobby projects and occasional brain dumps.
+
+Everything is in the EUPL license (see LICENSE.md file in this repository)
+
