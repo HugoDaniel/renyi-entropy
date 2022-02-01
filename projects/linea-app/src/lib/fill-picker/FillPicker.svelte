@@ -1,31 +1,37 @@
-<script lang="ts">
+<script>
 	import ColorGrid from './ColorGrid.svelte';
 	import ColorButton from './ColorButton.svelte';
 	import { HexToRGB } from './conversion';
-	console.log('#69b9d9 , 105, 185, 217');
-	let color = '#69b9d9';
+
+	let centerColor = '#69b9d9';
 	let selected = 6;
-	let handleColorChange = (e: { detail: { color: string; index: number } }) => {
+	let color = centerColor;
+
+	/**
+	 * Updates the color and the selected attributes.
+	 *
+	 * @param {{ detail: { color: string; index: number }}} e - The event object
+	 */
+	let handleSwatchChange = (e) => {
 		color = e.detail.color;
 		selected = e.detail.index;
 	};
-	let handleColorInput = (e: Event) => {
-		if (e.target instanceof HTMLInputElement) {
-			color = e.target.value;
-		}
+
+	let handleColorInput = (e) => {
+		centerColor = e.target.value;
+		selected = 6;
 	};
 </script>
 
 <aside>
-	<ColorGrid {color} {selected} on:colorChange={handleColorChange} />
-
+	<ColorGrid {centerColor} {selected} on:colorChange={handleSwatchChange} />
 	<div class="selected-color">
-		<div class="color">
-			<input type="color" bind:value={color} />
-			<ColorButton {color} width={96} height={96} />
+		<div class="color" style:--color={color} style:--width="96px" style:--height="96px">
+			<input type="color" bind:value={color} on:input={handleColorInput} />
+			<ColorButton />
 		</div>
-		<h3>{color}</h3>
 		<h4>{HexToRGB(color)}</h4>
+		<h3>{color}</h3>
 	</div>
 </aside>
 
@@ -38,9 +44,9 @@
 	.selected-color {
 		display: grid;
 		grid-template-areas:
-			'color  hex   hex   hex'
+			'color  hsl   hsl   hsl'
 			'color  rgb   rgb   rgb'
-			'color  .     .     .';
+			'color  hex   hex   hex';
 	}
 	.selected-color .color input {
 		width: 96px;
@@ -60,7 +66,7 @@
 	.selected-color h3 {
 		grid-area: hex;
 		padding: 0;
-		margin: 0;
+		margin: 0.5rem 0;
 		text-transform: uppercase;
 		width: 10rem;
 		color: gray;

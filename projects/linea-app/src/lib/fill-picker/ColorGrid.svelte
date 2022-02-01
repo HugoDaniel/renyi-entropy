@@ -1,27 +1,39 @@
-<script lang="ts">
-	import { tick, beforeUpdate } from 'svelte';
+<script>
 	import { createEventDispatcher } from 'svelte';
 	import ColorButton from './ColorButton.svelte';
 	import { swatches } from './colorSwatches';
 
-	export let color = '#69b9d9';
+	export let centerColor = '#69b9d9';
 	export let selected = 6;
 
-	let colors = swatches(color);
-	beforeUpdate(async () => {
-		colors = swatches(color);
-		await tick();
-	});
+	$: colors = swatches(centerColor, selected);
 
 	const dispatch = createEventDispatcher();
-	const dispatchColorChange = (selectedColor: string, index: number) => () =>
-		dispatch('colorChange', { color: selectedColor, index });
+	/**
+	 * This function emits the `colorChange` event.
+	 * It is intended to be called directly at the event handler, it returns
+	 * the event emiter function for the arguments passed as argument.
+	 *
+	 * @param {string} selectedColor - The color hex string for the event detail
+	 * @param {number} index - The swatch index for the event detail
+	 * @returns {() => void} The event emiter function intended to be used at
+	 * the Svelte on:event attribute.
+	 */
+	function dispatchColorChange(selectedColor, index) {
+		return () => dispatch('colorChange', { color: selectedColor, index });
+	}
 </script>
 
-<ol style:transform={`rotate(-45deg)`}>
+<ol style:transform={`rotate(-0deg)`}>
 	{#each colors as c, i}
-		<li style={`grid-area: area${i};`} on:click={dispatchColorChange(c, i)}>
-			<ColorButton color={c} selected={selected === i} />
+		<li
+			style={`grid-area: area${i};`}
+			style:--color={c}
+			style:--width="64px"
+			style:--height="64px"
+			on:click={dispatchColorChange(c, i)}
+		>
+			<ColorButton selected={selected === i} />
 		</li>
 	{/each}
 </ol>

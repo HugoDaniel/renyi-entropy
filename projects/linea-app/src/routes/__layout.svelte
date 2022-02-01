@@ -7,8 +7,6 @@
 	<slot />
 </main>
 
-<Footer />
-
 <style>
 	main {
 		flex: 1;
