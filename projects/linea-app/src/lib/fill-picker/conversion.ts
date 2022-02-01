@@ -105,3 +105,11 @@ export function HSLToHex(hsl: { h: number; s: number; l: number }) {
 
 	return '#' + rs + gs + bs;
 }
+
+export function HexToRGB(hex: string) {
+	const r = Number('0x' + hex.slice(1, 3));
+	const g = Number('0x' + hex.slice(3, 5));
+	const b = Number('0x' + hex.slice(5, 7));
+
+	return `rgb(${r}, ${g}, ${b})`;
+}

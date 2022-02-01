@@ -23,8 +23,8 @@
 	const maxR = 4;
 </script>
 
-<svg viewBox="0 0 64 64" aria-hidden="true" {width} {height}>
-	<rect x={4} y={4} width="56" height="56" fill={color} class={selected ? 'shadow' : ''} />
+<svg viewBox="0 0 64 64" aria-hidden="true" {width} {height} class={selected ? 'selected' : ''}>
+	<rect x={4} y={4} width="56" height="56" fill={color} />
 	{#each seeds as rnd}
 		<circle cy={4 + (maxR / 2) * rnd} cx={4 + 56 * Math.random()} r={maxR * rnd} fill={color} />
 		<circle cx={60 - (maxR / 2) * rnd} cy={4 + 56 * Math.random()} r={maxR * rnd} fill={color} />
@@ -34,6 +34,16 @@
 </svg>
 
 <style>
-	.shadow {
+	svg {
+		transition: transform 100ms ease-in;
+	}
+	svg:hover {
+		transform: scale(0.9);
+		transition: transform 100ms ease-out;
+	}
+	svg.selected:hover,
+	.selected {
+		transform: scale(0.8);
+		transition: transform 100ms ease-out;
 	}
 </style>

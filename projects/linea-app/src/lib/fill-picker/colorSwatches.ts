@@ -8,7 +8,7 @@ export function swatches(color: string) {
 	const c = Number('0x' + color.slice(1));
 	const { h, s, l } = hexToHSL(color);
 	const rndSeed = c / 0xffffff;
-	const rnd = 1; // Math.round(rndSeed * 5);
+	const rnd = Math.round(rndSeed * 5);
 
 	const saturationValues = () => {
 		const A = rnd;
@@ -73,14 +73,14 @@ export function swatches(color: string) {
 	const hueSwatches = hueValues();
 
 	// Create an array of {h,s,l} objects
-	const hslSwatches: { h: number; s: number; l: number }[] = [];
+	const hslSwatches: string[] = [];
 	for (let i = 0; i < saturationSwatches.length; ++i) {
-		hslSwatches.push({
+		hslSwatches[i] = HSLToHex({
 			h: hueSwatches[i],
 			s: saturationSwatches[i],
 			l: lightnessSwatches[i]
 		});
 	}
 
-	return hslSwatches.map((hsl) => HSLToHex(hsl));
+	return hslSwatches;
 }

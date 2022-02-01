@@ -1,53 +1,29 @@
 <script lang="ts">
+	import { tick, beforeUpdate } from 'svelte';
+	import { createEventDispatcher } from 'svelte';
 	import ColorButton from './ColorButton.svelte';
 	import { swatches } from './colorSwatches';
 
 	export let color = '#69b9d9';
+	export let selected = 6;
 
-	const colors = swatches(color);
+	let colors = swatches(color);
+	beforeUpdate(async () => {
+		colors = swatches(color);
+		await tick();
+	});
+
+	const dispatch = createEventDispatcher();
+	const dispatchColorChange = (selectedColor: string, index: number) => () =>
+		dispatch('colorChange', { color: selectedColor, index });
 </script>
 
 <ol style:transform={`rotate(-45deg)`}>
-	<li style="grid-area: thl;">
-		<ColorButton color={colors[0]} />
-	</li>
-	<li style="grid-area: th;">
-		<ColorButton color={colors[1]} />
-	</li>
-	<li style="grid-area: th-chl;">
-		<ColorButton color={colors[2]} />
-	</li>
-	<li style="grid-area: chl;">
-		<ColorButton color={colors[3]} />
-	</li>
-	<li style="grid-area: thd;">
-		<ColorButton color={colors[4]} />
-	</li>
-	<li style="grid-area: thd-ch;">
-		<ColorButton color={colors[5]} />
-	</li>
-	<li style="grid-area: bhl-ch;">
-		<ColorButton color={colors[7]} />
-	</li>
-	<li style="grid-area: bhl;">
-		<ColorButton color={colors[8]} />
-	</li>
-	<li style="grid-area: chd;">
-		<ColorButton color={colors[9]} />
-	</li>
-	<li style="grid-area: bh-chd;">
-		<ColorButton color={colors[10]} />
-	</li>
-	<li style="grid-area: bh;">
-		<ColorButton color={colors[11]} />
-	</li>
-	<li style="grid-area: bhd;">
-		<ColorButton color={colors[12]} />
-	</li>
-
-	<li style="grid-area: ch;">
-		<ColorButton {color} selected={true} />
-	</li>
+	{#each colors as c, i}
+		<li style={`grid-area: area${i};`} on:click={dispatchColorChange(c, i)}>
+			<ColorButton color={c} selected={selected === i} />
+		</li>
+	{/each}
 </ol>
 
 <style>
@@ -55,17 +31,16 @@
 		list-style-type: none;
 		margin: 0;
 		padding: 0;
-		/* background: rgba(200, 180, 190, 0.2); */
 
 		display: grid;
 		grid-template-columns: 64px;
 		grid-template-rows: 64px;
 		grid-template-areas:
-			'.   .      thl    .      .'
-			'.   th     th-chl chl    .'
-			'thd thd-ch ch     bhl-ch bhl'
-			'.   chd    bh-chd bh     .'
-			'.   .      bhd    .      .';
+			'.      .      area0   .       .'
+			'.      area1  area2   area3   .'
+			'area4  area5  area6   area7   area8'
+			'.      area9  area10  area11  .'
+			'.      .      area12  .       .';
 	}
 	li {
 		margin: 0;
