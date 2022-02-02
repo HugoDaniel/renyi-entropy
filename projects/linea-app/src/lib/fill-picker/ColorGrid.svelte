@@ -24,7 +24,7 @@
 	}
 </script>
 
-<ol style:transform={`rotate(-0deg)`}>
+<ol style:transform={`rotate(45deg)`}>
 	{#each colors as c, i}
 		<li
 			style={`grid-area: area${i};`}

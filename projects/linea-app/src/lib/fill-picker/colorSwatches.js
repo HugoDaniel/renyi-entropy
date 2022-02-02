@@ -14,50 +14,113 @@ export function swatches(color, at = 6) {
 	const rndSeed = c / 0xffffff;
 	const rnd = Math.round(rndSeed * 5);
 
-	const saturationValues = () => {
-		const A = rnd;
-		const B = -10 - A;
-		const C = B * 2;
-		const D = Math.round((B * 3) / 2);
-		const E = Math.round(D / 2) - A;
-		const F = -E * 3 + A;
-		const G = Math.round(F / 2 + A);
+	const isGray =
+		color[1] === color[3] &&
+		color[3] === color[5] &&
+		color[2] === color[4] &&
+		color[4] === color[6];
 
-		const values = [-B, E, C, -D + A, C, E * 4, 0, G, D - A, B, G, F, A];
-		return values.map((delta) => {
-			let saturation = s + delta;
-			let limit = 100;
-			do {
-				if (saturation > limit || saturation < 0) {
-					delta /= 2;
-					saturation = l + delta;
-				}
-			} while (saturation > 100 || saturation < 0);
-			return Math.round(Math.max(0, Math.min(saturation, 100)));
-		});
+	/**
+	 * Gets a distance (in number) from the current color and its closest gray
+	 * @returns number A distance from the current color and its gray
+	 */
+	const grayDist = () => {
+		// To get the closest gray, the current color saturation is set to 0
+		const grayHex = HSLToHex({ h, s: 0, l });
+		const gray = Number('0x' + grayHex.slice(1));
+		// Decompose the closest gray into RGB number values
+		const rGray = (gray >> 16) & 0x0000ff;
+		const gGray = (gray >> 8) & 0x0000ff;
+		const bGray = gray & 0x0000ff;
+		// Decompose the current color into RGB number values
+		const r = (c >> 16) & 0x0000ff;
+		const g = (c >> 8) & 0x0000ff;
+		const b = c & 0x0000ff;
+		// Return their absolute difference.
+		return Math.abs(rGray - r) + Math.abs(gGray - g) + Math.abs(bGray - b);
+	};
+
+	const saturationValues = () => {
+		// The sat amount to represent
+		const range = Math.min(64, grayDist()) + 1;
+		let weakest = 0;
+		let strongest = 100;
+		let rangeRatio = 0.5;
+		if (s >= 50) {
+			const distanceToMax = 100 - s;
+			rangeRatio = Math.min(1 / (range / distanceToMax) - 0.1, rangeRatio);
+			strongest = Math.min(s + range * rangeRatio, 100);
+			weakest = s - range / 2;
+		} else {
+			const distanceToMin = s;
+			rangeRatio = Math.min(1 - distanceToMin / range - 0.1, rangeRatio);
+			strongest = Math.max(s - range * rangeRatio, 0);
+			weakest = s + range / 2;
+		}
+		const increment = (strongest - weakest) / 5;
+		let rightValue = weakest + Math.abs((weakest + increment - (strongest - increment * 3)) / 2);
+		let leftValue = Math.abs((strongest - increment + (weakest + increment * 3)) / 2);
+		rightValue = rightValue > strongest - increment * 4 ? strongest : rightValue;
+		leftValue = leftValue < weakest + increment * 4 ? weakest + increment * 4 : leftValue;
+
+		const values = [
+			weakest + increment * 1,
+			rightValue,
+			weakest,
+			weakest + increment * 3,
+			weakest + increment * 4,
+			weakest + increment * 2,
+			s,
+			strongest - increment * 2,
+			strongest - increment * 4,
+			strongest - increment * 3,
+			strongest,
+			leftValue,
+			strongest - increment * 1
+		];
+		return values;
 	};
 
 	const lightnessValues = () => {
-		const A = rnd;
-		const B = 10;
-		const C = Math.round(-B / 2);
-		const D = 2 * B + 2 * A;
-		const E = Math.round(D / 2 + A);
-		const F = -E - C - A;
+		// The light amount to represent
+		let range = isGray ? 64 : Math.min(50, grayDist()) + 1;
+		let darkest = 0;
+		let lightest = 100;
 
-		const values = [B, C, E, D, -D - A, F, 0, B - C, B * 2 - C, -B * 2, A, D + F, -A];
-		console.log(`LIGHT[0]: ${values[0]}; LIGHT[2]: ${values[2]}`);
-		return values.map((delta) => {
-			let light = l + delta;
-			let limit = 100;
-			do {
-				if (light > limit || light < 0) {
-					delta /= 2;
-					light = l + delta;
-				}
-			} while (light > 100 || light < 0);
-			return Math.round(Math.max(0, Math.min(light, 100)));
-		});
+		let rangeRatio = 0.5;
+		if (l >= 50) {
+			const distanceToMax = 100 - l;
+			rangeRatio = Math.min(1 / (range / distanceToMax) - 0.1, rangeRatio);
+			lightest = Math.min(l + range * rangeRatio, 100);
+			darkest = l - range / 2;
+		} else {
+			const distanceToMin = l;
+			rangeRatio = Math.min(1 - distanceToMin / range - 0.1, rangeRatio);
+			darkest = Math.max(l - range * rangeRatio, 0);
+			lightest = l + range / 2;
+		}
+		const increment = (lightest - darkest) / 5;
+		let rightValue = darkest + Math.abs((darkest + increment - (lightest - increment * 3)) / 2);
+		let leftValue = Math.abs((lightest - increment + (darkest + increment * 3)) / 2);
+		rightValue = rightValue > lightest - increment * 4 ? lightest : rightValue;
+		leftValue = leftValue < darkest + increment * 4 ? darkest + increment * 4 : leftValue;
+
+		const values = [
+			darkest,
+			darkest + increment * 2,
+			darkest + increment * 1,
+			rightValue,
+			darkest + increment * 4,
+			darkest + increment * 3,
+			l,
+			lightest - increment * 3,
+			lightest - increment * 4,
+			leftValue,
+			lightest - increment * 1,
+			lightest - increment * 2,
+			lightest
+		];
+		return values;
 	};
 
 	const hueValues = () => {
@@ -86,7 +149,6 @@ export function swatches(color, at = 6) {
 			C,
 			C
 		];
-		console.log(`HUE[0]: ${values[0]}; HUE[2]: ${values[2]}`);
 		return values.map((delta) => {
 			return (h + delta + 360) % 360;
 		});
@@ -108,23 +170,6 @@ export function swatches(color, at = 6) {
 			l: lightnessSwatches[i]
 		});
 	}
-	const hsl0 = {
-		h: hueSwatches[0],
-		s: saturationSwatches[0],
-		l: lightnessSwatches[0]
-	};
-	const hsl1 = {
-		h: hueSwatches[2],
-		s: saturationSwatches[2],
-		l: lightnessSwatches[2]
-	};
-	const hslcurrent = {
-		h: hueSwatches[6],
-		s: saturationSwatches[6],
-		l: lightnessSwatches[6]
-	};
-	console.log('C[0]: ', hslSwatches[0], ', C[2]: ', hslSwatches[2]);
-	console.log('CURRENT:', hslcurrent, '0:', hsl0, '1:', hsl1);
 
 	return hslSwatches;
 }

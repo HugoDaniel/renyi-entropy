@@ -32,6 +32,7 @@
 		</div>
 		<h4>{HexToRGB(color)}</h4>
 		<h3>{color}</h3>
+		<p><span>⇦</span> Change color</p>
 	</div>
 </aside>
 
@@ -80,5 +81,19 @@
 		padding-top: 0.5rem;
 		text-transform: uppercase;
 		color: lightgray;
+	}
+	.selected-color p {
+		grid-area: hsl;
+		padding: 0;
+		margin: 0;
+		font-weight: 400;
+		font-size: 0.85rem;
+		padding-top: 0.5rem;
+		text-transform: uppercase;
+		color: lightgray;
+	}
+	.selected-color p span {
+		padding: 0;
+		margin: 0;
 	}
 </style>

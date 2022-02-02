@@ -1,11 +1,6 @@
 <script>
 	// The background color for this diamond
 	// var(--color) CSS variable
-
-	// The width in pixels
-	// export let width = 64;
-	// The height in pixels
-	// export let height = 64;
 	export let selected = false;
 
 	// The fuzzy border is made of circles, in each edge there are
