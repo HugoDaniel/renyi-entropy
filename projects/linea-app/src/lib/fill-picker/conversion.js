@@ -80,9 +80,9 @@ export function HSLToHex(hsl) {
  * @returns {string} The `rgb(number, number, number)` string
  */
 export function HexToRGB(hex) {
-	const r = Number('0x' + hex.slice(1, 3));
-	const g = Number('0x' + hex.slice(3, 5));
-	const b = Number('0x' + hex.slice(5, 7));
+	const r = parseInt(hex.slice(1, 3), 16);
+	const g = parseInt(hex.slice(3, 5), 16);
+	const b = parseInt(hex.slice(5, 7), 16);
 
 	return `rgb(${r}, ${g}, ${b})`;
 }

@@ -5,10 +5,9 @@ import { hexToHSL, HSLToHex } from './conversion';
  * relation with the input color.
  *
  * @param {string} color The hex color string "#RRGGBB"
- * @param {number} at The position of the color in the swatches
  * @returns {string[]} An array of hex color strings.
  */
-export function swatches(color, at = 6) {
+export function swatches(color) {
 	const c = Number('0x' + color.slice(1));
 	const { h, s, l } = hexToHSL(color);
 	const rndSeed = c / 0xffffff;
@@ -63,6 +62,22 @@ export function swatches(color, at = 6) {
 		rightValue = rightValue > strongest - increment * 4 ? strongest : rightValue;
 		leftValue = leftValue < weakest + increment * 4 ? weakest + increment * 4 : leftValue;
 
+		const values2 = [
+			weakest,
+			weakest + increment * 2,
+			weakest + increment * 1,
+			rightValue,
+			weakest + increment * 4,
+			weakest + increment * 3,
+			s,
+			strongest - increment * 3,
+			strongest - increment * 4,
+			leftValue,
+			strongest - increment * 1,
+			strongest - increment * 2,
+			strongest
+		];
+
 		const values = [
 			weakest + increment * 1,
 			rightValue,
@@ -82,7 +97,7 @@ export function swatches(color, at = 6) {
 	};
 
 	const lightnessValues = () => {
-		// The light amount to represent
+		// The amount of light represented throughout the colors in the palette
 		let range = isGray ? 64 : Math.min(50, grayDist()) + 1;
 		let darkest = 0;
 		let lightest = 100;
@@ -125,8 +140,8 @@ export function swatches(color, at = 6) {
 
 	const hueValues = () => {
 		const A = rnd;
-		const B = -118;
-		const C = 34;
+		const B = -118 - rnd;
+		const C = 34 + rnd;
 		const D = Math.round(B / 2 - A);
 		const E = Math.round(-D / 4 - A);
 		// Round some math, these values are derived from the ones above:

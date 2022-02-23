@@ -15,7 +15,13 @@
 	const maxR = 4;
 </script>
 
-<svg viewBox="0 0 64 64" aria-hidden="true" class={selected ? 'selected' : ''}>
+<svg
+	xmlns="http://www.w3.org/2000/svg"
+	viewBox="0 0 64 64"
+	aria-hidden="true"
+	class={selected ? 'selected' : ''}
+	role="img"
+>
 	<rect x={4} y={4} width="56" height="56" />
 	{#each seeds as rnd}
 		<circle cy={4 + (maxR / 2) * rnd} cx={4 + 56 * Math.random()} r={maxR * rnd} />

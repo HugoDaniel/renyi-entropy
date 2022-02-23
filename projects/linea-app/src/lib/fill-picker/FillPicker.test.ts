@@ -11,5 +11,10 @@ it('can render', () => {
 
 it('has a title that prompts action', () => {
 	const { getByText } = render(FillPicker);
-	expect(getByText('Fill the shape with')).toBeDefined();
+	expect(getByText('Change color')).toBeDefined();
+});
+
+it('starts with the #69b9d9 color', () => {
+	const { getByText } = render(FillPicker);
+	expect(getByText('#69b9d9')).toBeDefined();
 });

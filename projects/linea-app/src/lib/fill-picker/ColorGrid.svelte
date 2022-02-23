@@ -1,12 +1,12 @@
 <script>
 	import { createEventDispatcher } from 'svelte';
-	import ColorButton from './ColorButton.svelte';
+	import ColorSwatch from './ColorSwatch.svelte';
 	import { swatches } from './colorSwatches';
 
 	export let centerColor = '#69b9d9';
 	export let selected = 6;
 
-	$: colors = swatches(centerColor, selected);
+	$: colors = swatches(centerColor);
 
 	const dispatch = createEventDispatcher();
 	/**
@@ -33,7 +33,7 @@
 			style:--height="64px"
 			on:click={dispatchColorChange(c, i)}
 		>
-			<ColorButton selected={selected === i} />
+			<ColorSwatch selected={selected === i} />
 		</li>
 	{/each}
 </ol>
